@@ -373,7 +373,7 @@ class TrainModel:
                 output = self.model(data)
 
                 batch_loss = self.loss_fn(output, target)  # compute average Cross Entropy loss for current batch
-                validation_loss += batch_loss.data[0]  # add current batch loss to total validation loss
+                validation_loss += batch_loss.data.item()  # add current batch loss to total validation loss
 
                 value, index = torch.max(output.data, 1)  # get index of max value among output class
                 # Compute total no of correct predictions by the trained model in current epoch
