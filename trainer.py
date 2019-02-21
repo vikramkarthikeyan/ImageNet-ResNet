@@ -75,8 +75,8 @@ class Trainer:
         self.train_batch_size = training_batch_size 
         self.validation_batch_size = validation_batch_size
 
-        train_root = os.path.join(data, 'train')  # this is path to training images folder
-        validation_root = os.path.join(data, 'val/images')  # this is path to validation images folder
+        train_root = os.path.join(data, 'train')
+        validation_root = os.path.join(data, 'val/images') 
 
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
@@ -103,6 +103,8 @@ class Trainer:
         self.class_names = training_data.classes
         self.num_classes = len(training_data.classes)
         self.tiny_class = generate_class_list(data, self.class_names)
+
+        self.validation_accuracy = list()
     
     def train(self, model, criterion, optimizer, epoch):
         batch_time = AverageMeter()
@@ -161,13 +163,16 @@ class Trainer:
                         loss=losses))
 
 
-    def validate(self, model, criterion):
+    def validate(self, model, criterion, epoch):
         batch_time = AverageMeter()
         losses = AverageMeter()
-        top1 = AverageMeter()
+        accuracy = AverageMeter()
 
         # switch to evaluate mode
         model.eval()
+
+        validation_loss = 0
+        correct_predictions = 0
 
         with torch.no_grad():
             end = time.time()
@@ -179,18 +184,34 @@ class Trainer:
                 # compute output
                 output = model(data)
                 loss = criterion(output, target)
+                validation_loss += loss
+
+                # To Measure Accuracy:
+                # Step 1: get index of maximum value among output classes
+                value, index = torch.max(output.data, 1) 
+
+                # Step 2: Compute total no of correct predictions 
+                for i in range(0, self.validation_batch_size):
+                    if index[i] == target.data[i]:  # if index equal to target label, record correct classification
+                        correct_predictions += 1
 
                 # measure accuracy and record loss
-                acc1 = accuracy(output, target, topk=(1, 5))
                 losses.update(loss.item(), data.size(0))
-                top1.update(acc1[0], data.size(0))
+                accuracy.update(correct_predictions/self.validation_batch_size)
+                # accuracy = 
 
                 # measure elapsed time
                 batch_time.update(time.time() - end)
                 end = time.time()
 
-                print top1.val
-                print i
+                # print(type(top1.val), type(top1.avg))
+
+                print('Batch [{0}/{1}]\t'
+                    'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                        'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                        'Accuracy {accuracy.val} ({accuracy.avg})\t'.format(
+                        i, len(self.train_loader), batch_time=batch_time,
+                        loss=losses, accuracy=accuracy))
 
                 # print('Test: [{0}/{1}]\t'
                 #         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
@@ -199,10 +220,20 @@ class Trainer:
                 #         i, len(self.validation_loader), batch_time=batch_time, loss=losses,
                 #         top1=top1))
 
-            print(' * Acc@1 {top1.avg:.3f}'
-                .format(top1=top1))
+            # average loss = sum of loss over all batches/num of batches
+            average_validation_loss = validation_loss / (
+                len(self.validation_loader.dataset) / self.validation_batch_size)
 
-        return top1.avg
+            # calculate total accuracy for the current epoch
+            self.validation_accuracy_cur_epoch = 100.0 * total_correct / (len(self.validation_loader.dataset))
+            # add accuracy for current epoch to list
+            self.validation_accuracy.append(self.validation_accuracy_cur_epoch)
+
+            print('\nValidation Epoch {}: Average loss: {:.6f} \t Accuracy: {}/{} ({:.2f}%)\n'.
+                  format(epoch, average_validation_loss, total_correct, len(self.validation_loader.dataset),
+                         self.validation_accuracy_cur_epoch))
+
+        return average_validation_loss
 
 
     def save_checkpoint(self, state, filename='checkpoint.pth.tar'):

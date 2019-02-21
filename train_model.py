@@ -60,7 +60,7 @@ if __name__ == "__main__":
         trainer.train(model, criterion, optimizer, epoch)
 
         # Evaluate on the validation set
-        accuracy = trainer.validate(model, criterion)
+        accuracy = trainer.validate(model, criterion, epoch)
 
         print accuracy
 
