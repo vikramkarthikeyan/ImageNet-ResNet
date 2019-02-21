@@ -75,8 +75,7 @@ class Base_CNN(nn.Module):
         output = ((output - 3 + (2 * 2)) / 1) + 1
         output = ((output - 2 + (2 * 0)) / 2) + 1
 
-        print output
-        output = 128 * 15 * 15
+        output = 128 * output * output
         
         # Hidden layer for DNN
         self.hidden = nn.Sequential(

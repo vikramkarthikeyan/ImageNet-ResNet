@@ -29,18 +29,18 @@ if __name__ == "__main__":
     print "\n\nImporting the data and setting up data loaders..."
     trainer = Trainer()
 
-    print "Initializing the CNN model..."
+    print "\nInitializing the CNN model..."
     model = base_model.Base_CNN()
 
-    print "\n\n Checking if a GPU is available..."
+    print "\nChecking if a GPU is available..."
     use_gpu = torch.cuda.is_available()
     if use_gpu:
         model = model.cuda()
-        print ('USE GPU')
+        print ('Using GPU')
     else:
-        print ('USE CPU')
+        print ('Using CPU as GPU is unavailable')
 
-    print "Model Summary..."
+    print "\nModel Summary..."
     summary(model, (3, 224, 224))
 
     # define loss function (criterion) and optimizer
