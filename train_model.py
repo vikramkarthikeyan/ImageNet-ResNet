@@ -64,9 +64,18 @@ if __name__ == "__main__":
 
         print accuracy
 
-        highest_accuracy = max(accuracy, highest_accuracy)
+        # If this epoch's model proves to be the best till now, save it as best model
+        if accuracy == max(accuracy, highest_accuracy):
+            highest_accuracy = accuracy
+            trainer.save_checkpoint({
+                    'epoch': epoch + 1,
+                    'state_dict': model.state_dict(),
+                    'best_acc1': highest_accuracy,
+                    'optimizer' : optimizer.state_dict(),
+                }
+            },'./models/best_model.pth.tar')
 
-        # Saving the model
+        # Checkpointing the model
         trainer.save_checkpoint({
                     'epoch': epoch + 1,
                     'state_dict': model.state_dict(),
