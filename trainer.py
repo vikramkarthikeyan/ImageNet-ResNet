@@ -191,8 +191,8 @@ class Trainer:
                 value, index = torch.max(output.data, 1) 
 
                 # Step 2: Compute total no of correct predictions 
-                for i in range(0, self.validation_batch_size):
-                    if index[i] == target.data[i]:  # if index equal to target label, record correct classification
+                for j in range(0, self.validation_batch_size):
+                    if index[j] == target.data[j]:  # if index equal to target label, record correct classification
                         correct_predictions += 1
 
                 # measure accuracy and record loss
@@ -210,7 +210,7 @@ class Trainer:
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                         'Accuracy {accuracy.val} ({accuracy.avg})\t'.format(
-                        i, len(self.train_loader), batch_time=batch_time,
+                        i, len(self.validation_loader), batch_time=batch_time,
                         loss=losses, accuracy=accuracy))
 
                 # print('Test: [{0}/{1}]\t'
@@ -225,12 +225,12 @@ class Trainer:
                 len(self.validation_loader.dataset) / self.validation_batch_size)
 
             # calculate total accuracy for the current epoch
-            self.validation_accuracy_cur_epoch = 100.0 * total_correct / (len(self.validation_loader.dataset))
+            self.validation_accuracy_cur_epoch = 100.0 * correct_predictions / (len(self.validation_loader.dataset))
             # add accuracy for current epoch to list
             self.validation_accuracy.append(self.validation_accuracy_cur_epoch)
 
             print('\nValidation Epoch {}: Average loss: {:.6f} \t Accuracy: {}/{} ({:.2f}%)\n'.
-                  format(epoch, average_validation_loss, total_correct, len(self.validation_loader.dataset),
+                  format(epoch, average_validation_loss, correct_predictions, len(self.validation_loader.dataset),
                          self.validation_accuracy_cur_epoch))
 
         return average_validation_loss
