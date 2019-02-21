@@ -182,13 +182,15 @@ class Trainer:
                 batch_time.update(time.time() - end)
                 end = time.time()
 
+                print top1.val
+                print i
 
-                print('Test: [{0}/{1}]\t'
-                        'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-                        'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                        'Acc@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
-                        i, len(self.validation_loader), batch_time=batch_time, loss=losses,
-                        top1=top1))
+                # print('Test: [{0}/{1}]\t'
+                #         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                #         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                #         'Acc@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
+                #         i, len(self.validation_loader), batch_time=batch_time, loss=losses,
+                #         top1=top1))
 
             print(' * Acc@1 {top1.avg:.3f}'
                 .format(top1=top1))
@@ -218,7 +220,7 @@ if __name__ == "__main__":
     highest_accuracy = 0
 
     print "Initiating training..."
-    for epoch in range(0, 10):
+    for epoch in range(0, 2):
 
         print "-------------------------------------------"
         print "Epoch: ", epoch
