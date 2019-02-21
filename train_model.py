@@ -51,7 +51,7 @@ if __name__ == "__main__":
     highest_accuracy = 0
 
     print "Initiating training..."
-    for epoch in range(0, 2):
+    for epoch in range(0, 5):
 
         print "-------------------------------------------------------"
         print "Epoch: ", epoch
@@ -66,13 +66,13 @@ if __name__ == "__main__":
 
         highest_accuracy = max(accuracy, highest_accuracy)
 
-    # Saving the model
-    trainer.save_checkpoint({
-                'epoch': epoch + 1,
-                'state_dict': model.state_dict(),
-                'best_acc1': highest_accuracy,
-                'optimizer' : optimizer.state_dict(),
-            })
+        # Saving the model
+        trainer.save_checkpoint({
+                    'epoch': epoch + 1,
+                    'state_dict': model.state_dict(),
+                    'best_acc1': highest_accuracy,
+                    'optimizer' : optimizer.state_dict(),
+                })
 
 
 

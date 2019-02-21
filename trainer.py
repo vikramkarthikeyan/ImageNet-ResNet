@@ -242,5 +242,5 @@ class Trainer:
         return average_validation_loss
 
 
-    def save_checkpoint(self, state, filename='checkpoint.pth.tar'):
+    def save_checkpoint(self, state, filename='models/checkpoint.pth.tar'):
         torch.save(state, filename)
