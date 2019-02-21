@@ -57,10 +57,10 @@ if __name__ == "__main__":
         print "Epoch: ", epoch
         print "-------------------"
         # Train for one epoch
-        trainer.train(model, criterion, optimizer, epoch)
+        trainer.train(model, criterion, optimizer, epoch, use_gpu)
 
         # Evaluate on the validation set
-        accuracy = trainer.validate(model, criterion, epoch)
+        accuracy = trainer.validate(model, criterion, epoch, use_gpu)
 
         print accuracy
 

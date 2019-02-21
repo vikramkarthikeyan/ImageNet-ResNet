@@ -106,7 +106,7 @@ class Trainer:
 
         self.validation_accuracy = list()
     
-    def train(self, model, criterion, optimizer, epoch):
+    def train(self, model, criterion, optimizer, epoch, usegpu):
         batch_time = AverageMeter()
         data_time = AverageMeter()
         losses = AverageMeter()
@@ -124,6 +124,9 @@ class Trainer:
             # if args.gpu is not None:
             #     input = input.cuda(args.gpu, non_blocking=True)
             # target = target.cuda(args.gpu, non_blocking=True)
+            if usegpu:
+                data = data.cuda(non_blocking=True)
+                target = target.cuda(non_blocking=True)
 
             # Compute Model output
             output = model(data)
@@ -163,7 +166,7 @@ class Trainer:
                         loss=losses))
 
 
-    def validate(self, model, criterion, epoch):
+    def validate(self, model, criterion, epoch, usegpu):
         batch_time = AverageMeter()
         losses = AverageMeter()
         accuracy = AverageMeter()
@@ -180,6 +183,9 @@ class Trainer:
                 # if args.gpu is not None:
                 #     data = data.cuda(args.gpu, non_blocking=True)
                 # target = target.cuda(args.gpu, non_blocking=True)
+                if usegpu:
+                    data = data.cuda(non_blocking=True)
+                    target = target.cuda(non_blocking=True)
 
                 # compute output
                 output = model(data)
