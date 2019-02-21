@@ -24,7 +24,7 @@ class Base_CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),    # output shape (128, 34, 34)
         )
 
-        output = ((224 - 3 + (2 * 2)) / 1) + 1
+        output = ((64 - 3 + (2 * 2)) / 1) + 1
         output = ((output - 2 + (2 * 0)) / 2) + 1
 
         # Convolution Layer 2

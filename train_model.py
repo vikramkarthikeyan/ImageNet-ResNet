@@ -41,7 +41,7 @@ if __name__ == "__main__":
         print ('Using CPU as GPU is unavailable')
 
     print "\nModel Summary..."
-    summary(model, (3, 224, 224))
+    summary(model, (3, 64, 64))
 
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss()

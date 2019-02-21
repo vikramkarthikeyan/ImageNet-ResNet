@@ -82,14 +82,14 @@ class Trainer:
 
         # Perform Data Augmentation by Randomly Flipping Training Images
         training_data = datasets.ImageFolder(train_root,
-                                        transform=transforms.Compose([transforms.RandomResizedCrop(224),
+                                        transform=transforms.Compose([#transforms.RandomResizedCrop(224),
                                                                         transforms.RandomHorizontalFlip(),
                                                                         transforms.ToTensor(),
                                                                         normalize]))
         # Resize Validation Images
         validation_data = datasets.ImageFolder(validation_root,
-                                            transform=transforms.Compose([transforms.Resize(256),
-                                                                            transforms.CenterCrop(224),
+                                            transform=transforms.Compose([#transforms.Resize(256),
+                                                                            #transforms.CenterCrop(224),
                                                                             transforms.ToTensor(),
                                                                             normalize]))
          # Create training dataloader
