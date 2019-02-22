@@ -23,9 +23,9 @@ parser.add_argument('--checkpoint', default=None, type=str, help='Checkpoint mod
 args = parser.parse_args()
 
 # Hyperparameters
-LR = 0.001  
+LR = 0.00001  
 SGD_MOMENTUM = 0.9
-WEIGHT_DECAY = 0.0001
+WEIGHT_DECAY = 0.00001
 
 if __name__ == "__main__":
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     highest_accuracy = 0
     start_epochs = 0
-    total_epochs = 5
+    total_epochs = 10
 
 
     # If checkpoint is available, load model from checkpoint

@@ -53,7 +53,7 @@ class AverageMeter(object):
 # https://github.com/pytorch/examples/blob/master/imagenet/main.py
 class Trainer:
 
-    def __init__(self, training_batch_size=100, validation_batch_size=10, data="./tiny-imagenet-200/"):
+    def __init__(self, training_batch_size=256, validation_batch_size=10, data="./tiny-imagenet-200/"):
 
         # Data loaders are written to reduce the number of images stored in-memory
         self.train_batch_size = training_batch_size 
