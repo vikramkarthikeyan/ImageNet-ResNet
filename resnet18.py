@@ -107,6 +107,6 @@ def resnet18(pretrained=False):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(BasicBlock, [2, 2, 2, 2])
+    model = ResNet(BasicBlock, [3, 4, 6, 3])
 
     return model

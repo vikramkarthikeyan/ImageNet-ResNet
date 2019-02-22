@@ -24,6 +24,7 @@ args = parser.parse_args()
 
 # Hyperparameters
 LR = 0.001  
+SGD_MOMENTUM = 0.9
 
 if __name__ == "__main__":
 
@@ -48,7 +49,7 @@ if __name__ == "__main__":
 
     # Define loss function and optimizer for CNN
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+    optimizer = torch.optim.SGD(model.parameters(), lr=LR, momentum=SGD_MOMENTUM)
 
     highest_accuracy = 0
     start_epochs = 0
