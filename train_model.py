@@ -84,7 +84,7 @@ if __name__ == "__main__":
         # Train for one epoch
         trainer.train(model, criterion, optimizer, epoch, use_gpu)
 
-        print("\nTraining Done...\nPerform Validation...")
+        print("\nTraining Done...\n\nPerform Validation...")
         # Evaluate on the validation set
         accuracy = trainer.validate(model, criterion, epoch, use_gpu)
 

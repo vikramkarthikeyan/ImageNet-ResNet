@@ -129,7 +129,7 @@ class Trainer:
             batch_time.update(time.time() - end)
             end = time.time()
 
-            print('\rEpoch [{0}] Batch [{1}/{2}]\t'
+            print('\rEpoch [{:04d}] Batch [{:04d}/{:04d}]\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
                         epoch, i, len(self.train_loader), batch_time=batch_time,
@@ -178,7 +178,7 @@ class Trainer:
                 batch_time.update(time.time() - end)
                 end = time.time()
 
-                print('\rBatch [{0}/{1}]\t'
+                print('\rBatch [{:04d}/{:04d}]\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                         'Accuracy {accuracy.val} ({accuracy.avg})\t'.format(
