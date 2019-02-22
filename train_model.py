@@ -17,41 +17,61 @@ from trainer import AverageMeter
 from trainer import Trainer
 
 parser = argparse.ArgumentParser(description='Tiny ImageNet Model Training...')
+parser.add_argument('--checkpoint', default=None, type=str, help='Checkpoint model file if stopped abruptly before')
 
-parser.add_argument('--gpu', default=None, type=int,
-                    help='GPU id to use.')
+args = parser.parse_args()
 
 # Hyperparameters
 LR = 0.001  
 
 if __name__ == "__main__":
-        
+
     print "\n\nImporting the data and setting up data loaders..."
     trainer = Trainer()
 
     print "\nInitializing the CNN model..."
-    model = base_model.Base_CNN()
-
-    print "\nChecking if a GPU is available..."
-    use_gpu = torch.cuda.is_available()
-    if use_gpu:
-        model = model.cuda()
-        print ('Using GPU')
-    else:
-        print ('Using CPU as GPU is unavailable')
+    model = base_model.Base_CNN() 
 
     print "\nModel Summary..."
     summary(model, (3, 64, 64))
 
-    # define loss function (criterion) and optimizer
+    # Define loss function and optimizer for CNN
     criterion = nn.CrossEntropyLoss()
-
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
     highest_accuracy = 0
+    start_epochs = 0
+    total_epochs = 5
 
-    print "Initiating training..."
-    for epoch in range(0, 5):
+    print "\nChecking if a GPU is available..."
+    use_gpu = torch.cuda.is_available()
+    # Initialize new model
+    if use_gpu:
+        model = model.cuda()
+        print ('Using GPU')
+    else:
+        print ('Using CPU as GPU is unavailable')    
+
+    # If checkpoint is available, load model from checkpoint
+    if args.checkpoint:
+        model_file = args.checkpoint
+        
+        if not os.path.isfile(model_file):
+            print "Invalid checkpoint file..."
+            exit()
+        
+        if use_gpu:
+            checkpoint = torch.load(model_file)
+        else:
+            checkpoint = torch.load(model_file, map_location='cpu')
+
+        model = model.load_state_dict(checkpoint['state_dict'])
+        optimizer = optimizer.load_state_dict(checkpoint['optimizer'])
+        highest_accuracy = checkpoint['best_accuracy']
+        start_epochs = checkpoint['epoch']
+
+    print "\nInitiating training..."
+    for epoch in range(start_epochs, total_epochs):
 
         print "-------------------------------------------------------"
         print "Epoch: ", epoch
@@ -62,29 +82,27 @@ if __name__ == "__main__":
         # Evaluate on the validation set
         accuracy = trainer.validate(model, criterion, epoch, use_gpu)
 
-        print accuracy
-        print type(accuracy)
-
-        # If this epoch's model proves to be the best till now, save it as best modell
-        if accuracy == max(accuracy, highest_accuracy):
-            highest_accuracy = accuracy
-            trainer.save_checkpoint({
-                    'epoch': epoch + 1,
-                    'state_dict': model.state_dict(),
-                    'best_acc1': highest_accuracy,
-                    'optimizer' : optimizer.state_dict()
-            },'./models/best_model.pth.tar')
-
-        # Checkpointing the model
+        # Checkpointing the model after every epoch
         trainer.save_checkpoint({
                     'epoch': epoch + 1,
                     'state_dict': model.state_dict(),
                     'best_acc1': highest_accuracy,
                     'optimizer' : optimizer.state_dict(),
                 })
+        
+        # If this epoch's model proves to be the best till now, save it as best model
+        if accuracy == max(accuracy, highest_accuracy):
+            highest_accuracy = accuracy
+            trainer.save_checkpoint({
+                    'epoch': epoch + 1,
+                    'state_dict': model.state_dict(),
+                    'best_accuracy': highest_accuracy,
+                    'optimizer' : optimizer.state_dict()
+            },'./models/best_model.pth.tar')
+
     
     print "Training complete..."
-    print "Best accuracy: ", accuracy
+    print "Best accuracy: ", highest_accuracy
 
 
 
