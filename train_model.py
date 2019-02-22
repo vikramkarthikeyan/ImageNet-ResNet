@@ -72,8 +72,7 @@ if __name__ == "__main__":
                     'epoch': epoch + 1,
                     'state_dict': model.state_dict(),
                     'best_acc1': highest_accuracy,
-                    'optimizer' : optimizer.state_dict(),
-                }
+                    'optimizer' : optimizer.state_dict()
             },'./models/best_model.pth.tar')
 
         # Checkpointing the model

@@ -150,6 +150,7 @@ class Trainer:
         with torch.no_grad():
             end = time.time()
             for i, (data, target) in enumerate(self.validation_loader):
+                correct_predictions_epoch = 0
                 if usegpu:
                     data = data.cuda(non_blocking=True)
                     target = target.cuda(non_blocking=True)
@@ -167,10 +168,11 @@ class Trainer:
                 for j in range(0, self.validation_batch_size):
                     if index[j] == target.data[j]:  # if index equal to target label, record correct classification
                         correct_predictions += 1
+                        correct_predictions_epoch += 1
 
                 # Step 3: Measure accuracy and record loss
                 losses.update(loss.item(), data.size(0))
-                accuracy.update(correct_predictions/self.validation_batch_size)
+                accuracy.update(100 * correct_predictions_epoch/float(self.validation_batch_size))
 
                 # measure elapsed time
                 batch_time.update(time.time() - end)
@@ -196,7 +198,7 @@ class Trainer:
                   format(epoch, average_validation_loss, correct_predictions, len(self.validation_loader.dataset),
                          self.validation_accuracy_cur_epoch))
 
-        return accuracy.avg
+        return self.validation_accuracy_cur_epoch
 
 
     def save_checkpoint(self, state, filename='./models/checkpoint.pth.tar'):
