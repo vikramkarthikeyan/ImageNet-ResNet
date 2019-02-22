@@ -32,6 +32,15 @@ if __name__ == "__main__":
     print "\nInitializing the CNN model..."
     model = base_model.Base_CNN() 
 
+    print "\nChecking if a GPU is available..."
+    use_gpu = torch.cuda.is_available()
+    # Initialize new model
+    if use_gpu:
+        model = model.cuda()
+        print ('Using GPU')
+    else:
+        print ('Using CPU as GPU is unavailable')    
+
     print "\nModel Summary..."
     summary(model, (3, 64, 64))
 
@@ -43,14 +52,6 @@ if __name__ == "__main__":
     start_epochs = 0
     total_epochs = 5
 
-    print "\nChecking if a GPU is available..."
-    use_gpu = torch.cuda.is_available()
-    # Initialize new model
-    if use_gpu:
-        model = model.cuda()
-        print ('Using GPU')
-    else:
-        print ('Using CPU as GPU is unavailable')    
 
     # If checkpoint is available, load model from checkpoint
     if args.checkpoint:
