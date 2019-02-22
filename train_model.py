@@ -87,7 +87,7 @@ if __name__ == "__main__":
         trainer.save_checkpoint({
                     'epoch': epoch + 1,
                     'state_dict': model.state_dict(),
-                    'best_acc1': highest_accuracy,
+                    'best_accuracy': highest_accuracy,
                     'optimizer' : optimizer.state_dict(),
                 })
         
