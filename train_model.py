@@ -8,6 +8,7 @@ import cv2
 import torch
 import torch.nn as nn
 import base_model
+import resnet18
 
 from torchvision import datasets, transforms
 from torchvision import models
@@ -30,7 +31,8 @@ if __name__ == "__main__":
     trainer = Trainer()
 
     print "\nInitializing the CNN model..."
-    model = base_model.Base_CNN() 
+    # model = base_model.Base_CNN()
+    model = resnet18.resnet18() 
 
     print "\nChecking if a GPU is available..."
     use_gpu = torch.cuda.is_available()
