@@ -30,22 +30,6 @@ def generate_class_list(data, class_list):
 
     return class_dict
 
-def accuracy(output, target, topk=(1,)):
-    """Computes the accuracy over the k top predictions for the specified values of k"""
-    with torch.no_grad():
-        maxk = max(topk)
-        batch_size = target.size(0)
-
-        _, pred = output.topk(maxk, 1, True, True)
-        pred = pred.t()
-        correct = pred.eq(target.view(1, -1).expand_as(pred))
-
-        res = []
-        for k in topk:
-            correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
-            res.append(correct_k.mul_(100.0 / batch_size))
-        return res
-
 # Class directly used from https://github.com/pytorch/examples/blob/master/imagenet/main.py
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -108,9 +92,7 @@ class Trainer:
     
     def train(self, model, criterion, optimizer, epoch, usegpu):
         batch_time = AverageMeter()
-        data_time = AverageMeter()
         losses = AverageMeter()
-        top1 = AverageMeter()
 
         # switch to train mode
         model.train()
@@ -121,9 +103,6 @@ class Trainer:
 
             data, target = Variable(data), Variable(target, requires_grad=False)
 
-            # if args.gpu is not None:
-            #     input = input.cuda(args.gpu, non_blocking=True)
-            # target = target.cuda(args.gpu, non_blocking=True)
             if usegpu:
                 data = data.cuda(non_blocking=True)
                 target = target.cuda(non_blocking=True)
@@ -135,9 +114,7 @@ class Trainer:
             loss = criterion(output, target)
 
             # measure accuracy and record loss
-            acc = accuracy(output, target, topk=(1, 5))
             losses.update(loss.item(), data.size(0))
-            top1.update(acc[0], data.size(0))
 
             # Clear(zero) Gradients for theta
             optimizer.zero_grad()
@@ -152,13 +129,6 @@ class Trainer:
             batch_time.update(time.time() - end)
             end = time.time()
 
-            # print('Epoch: [{0}][{1}/{2}]\t'
-            #         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-            #         'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
-            #         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-            #         'Acc@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
-            #         epoch, i, len(self.train_loader), batch_time=batch_time,
-            #         data_time=data_time, loss=losses, top1=top1))
             print('Batch [{0}][{1}/{2}]\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
@@ -180,9 +150,6 @@ class Trainer:
         with torch.no_grad():
             end = time.time()
             for i, (data, target) in enumerate(self.validation_loader):
-                # if args.gpu is not None:
-                #     data = data.cuda(args.gpu, non_blocking=True)
-                # target = target.cuda(args.gpu, non_blocking=True)
                 if usegpu:
                     data = data.cuda(non_blocking=True)
                     target = target.cuda(non_blocking=True)
@@ -201,16 +168,13 @@ class Trainer:
                     if index[j] == target.data[j]:  # if index equal to target label, record correct classification
                         correct_predictions += 1
 
-                # measure accuracy and record loss
+                # Step 3: Measure accuracy and record loss
                 losses.update(loss.item(), data.size(0))
                 accuracy.update(correct_predictions/self.validation_batch_size)
-                # accuracy = 
 
                 # measure elapsed time
                 batch_time.update(time.time() - end)
                 end = time.time()
-
-                # print(type(top1.val), type(top1.avg))
 
                 print('Batch [{0}/{1}]\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
@@ -218,13 +182,6 @@ class Trainer:
                         'Accuracy {accuracy.val} ({accuracy.avg})\t'.format(
                         i, len(self.validation_loader), batch_time=batch_time,
                         loss=losses, accuracy=accuracy))
-
-                # print('Test: [{0}/{1}]\t'
-                #         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-                #         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                #         'Acc@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
-                #         i, len(self.validation_loader), batch_time=batch_time, loss=losses,
-                #         top1=top1))
 
             # average loss = sum of loss over all batches/num of batches
             average_validation_loss = validation_loss / (
@@ -239,7 +196,7 @@ class Trainer:
                   format(epoch, average_validation_loss, correct_predictions, len(self.validation_loader.dataset),
                          self.validation_accuracy_cur_epoch))
 
-        return average_validation_loss
+        return accuracy.avg
 
 
     def save_checkpoint(self, state, filename='./models/checkpoint.pth.tar'):

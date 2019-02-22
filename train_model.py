@@ -63,8 +63,9 @@ if __name__ == "__main__":
         accuracy = trainer.validate(model, criterion, epoch, use_gpu)
 
         print accuracy
+        print type(accuracy)
 
-        # If this epoch's model proves to be the best till now, save it as best model
+        # If this epoch's model proves to be the best till now, save it as best modell
         if accuracy == max(accuracy, highest_accuracy):
             highest_accuracy = accuracy
             trainer.save_checkpoint({
@@ -82,6 +83,9 @@ if __name__ == "__main__":
                     'best_acc1': highest_accuracy,
                     'optimizer' : optimizer.state_dict(),
                 })
+    
+    print "Training complete..."
+    print "Best accuracy: ", accuracy
 
 
 
