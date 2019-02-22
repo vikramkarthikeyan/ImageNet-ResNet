@@ -129,11 +129,11 @@ class Trainer:
             batch_time.update(time.time() - end)
             end = time.time()
 
-            print('Epoch [{0}] Batch [{1}/{2}]\t'
+            print('\rEpoch [{0}] Batch [{1}/{2}]\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
                         epoch, i, len(self.train_loader), batch_time=batch_time,
-                        loss=losses))
+                        loss=losses), end="")
 
 
     def validate(self, model, criterion, epoch, usegpu):
@@ -183,7 +183,7 @@ class Trainer:
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                         'Accuracy {accuracy.val} ({accuracy.avg})\t'.format(
                         i, len(self.validation_loader), batch_time=batch_time,
-                        loss=losses, accuracy=accuracy))
+                        loss=losses, accuracy=accuracy), end="")
 
             # average loss = sum of loss over all batches/num of batches
             average_validation_loss = validation_loss / (

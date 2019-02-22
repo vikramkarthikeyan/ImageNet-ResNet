@@ -29,23 +29,23 @@ WEIGHT_DECAY = 0.00001
 
 if __name__ == "__main__":
 
-    print "\n\nImporting the data and setting up data loaders..."
+    print("\n\nImporting the data and setting up data loaders...")
     trainer = Trainer()
 
-    print "\nInitializing the CNN model..."
+    print("\nInitializing the CNN model...")
     # model = base_model.Base_CNN()
     model = resnet18.resnet18() 
 
-    print "\nChecking if a GPU is available..."
+    print("\nChecking if a GPU is available...")
     use_gpu = torch.cuda.is_available()
     # Initialize new model
     if use_gpu:
         model = model.cuda()
-        print ('Using GPU')
+        print ("Using GPU")
     else:
-        print ('Using CPU as GPU is unavailable')    
+        print ("Using CPU as GPU is unavailable")    
 
-    print "\nModel Summary..."
+    print("\nModel Summary...")
     summary(model, (3, 64, 64))
 
     # Define loss function and optimizer for CNN
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         model_file = args.checkpoint
         
         if not os.path.isfile(model_file):
-            print "Invalid checkpoint file..."
+            print("Invalid checkpoint file...")
             exit()
         
         if use_gpu:
@@ -75,12 +75,12 @@ if __name__ == "__main__":
         highest_accuracy = checkpoint['best_accuracy']
         start_epochs = checkpoint['epoch']
 
-    print "\nInitiating training..."
+    print("\nInitiating training...")
     for epoch in range(start_epochs, total_epochs):
 
-        print "-------------------------------------------------------"
-        print "Epoch: ", epoch
-        print "-------------------"
+        print("-------------------------------------------------------")
+        print("Epoch: ", epoch)
+        print("-------------------")
         # Train for one epoch
         trainer.train(model, criterion, optimizer, epoch, use_gpu)
 
@@ -106,8 +106,8 @@ if __name__ == "__main__":
             },'./models/best_model.pth.tar')
 
     
-    print "Training complete..."
-    print "Best accuracy: ", highest_accuracy
+    print("Training complete...")
+    print("Best accuracy: ", highest_accuracy)
 
 
 
