@@ -24,7 +24,7 @@ parser.add_argument('--checkpoint', default=None, type=str, help='Checkpoint mod
 args = parser.parse_args()
 
 # Hyperparameters
-LR = 0.00001  
+LR = 0.001  
 SGD_MOMENTUM = 0.9
 WEIGHT_DECAY = 0.00001
 
@@ -114,6 +114,7 @@ if __name__ == "__main__":
         early_stopper.check_loss_history(val_loss)
         if early_stopper.stop:
             print("Stopping training...")
+            break
 
     
     print("Training complete...")
