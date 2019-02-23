@@ -30,12 +30,13 @@ class Trainer:
         training_path = os.path.join(data, 'train')
         validation_path = os.path.join(data, 'val/images') 
 
-        # mean and std values acquired from ImageNet statistics
+        # Precomputed mean and std values acquired from ImageNet statistics
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
         # Perform Data Augmentation by Randomly Flipping Training Images
         training_data = datasets.ImageFolder(training_path,
                                         transform=transforms.Compose([#transforms.RandomResizedCrop(224),
+                                                                        transforms.RandomAffine(degrees=10),
                                                                         transforms.RandomHorizontalFlip(),
                                                                         transforms.ToTensor(),
                                                                         normalize]))
