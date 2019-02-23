@@ -184,7 +184,7 @@ class Trainer:
             #       format(epoch, average_validation_loss, correct_predictions, validation_size,
             #              self.validation_accuracy_epoch))
             
-            print("\nValidation Accuracy: Acc@1: {top1.avg:.3f}%, Acc@5: {top5.avg:.3f}%, Avg Loss: {loss:.6f}".format(top1=top1, top5=top5, loss=average_validation_loss))
+            print("\nValidation Accuracy: Acc@1: {top1.avg:.3f}%, Acc@5: {top5.avg:.3f}%, Avg Loss: {loss:.6f}\n".format(top1=top1, top5=top5, loss=average_validation_loss))
 
         return self.validation_accuracy_epoch, validation_loss
 
