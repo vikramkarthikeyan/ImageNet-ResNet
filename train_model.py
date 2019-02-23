@@ -25,7 +25,7 @@ parser.add_argument('--checkpoint', default=None, type=str, help='Checkpoint mod
 args = parser.parse_args()
 
 # Hyperparameters
-LR = 0.001  
+LR = 0.1
 SGD_MOMENTUM = 0.9
 WEIGHT_DECAY = 0.00001
 
@@ -80,12 +80,11 @@ if __name__ == "__main__":
         highest_accuracy = checkpoint['best_accuracy']
         start_epochs = checkpoint['epoch']
     
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=7, verbose=True)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, verbose=True)
 
     print("\nInitiating training...")
     for epoch in range(start_epochs, total_epochs):
 
-        print("-------------------------------------------------------")
         print("Epoch: ", epoch)
         print("-------------------")
         # Train for one epoch
