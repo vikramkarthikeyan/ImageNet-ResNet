@@ -16,6 +16,7 @@ from torch.autograd import Variable
 from torchsummary import summary
 from trainer import AverageMeter
 from trainer import Trainer
+from EarlyStopping import EarlyStopper
 
 parser = argparse.ArgumentParser(description='Tiny ImageNet Model Training...')
 parser.add_argument('--checkpoint', default=None, type=str, help='Checkpoint model file if stopped abruptly before')
@@ -47,6 +48,9 @@ if __name__ == "__main__":
 
     print("\nModel Summary...")
     summary(model, (3, 64, 64))
+
+    print("\nInitializing Early Stopper...")
+    early_stopper = EarlyStopper()
 
     # Define loss function and optimizer for CNN
     criterion = nn.CrossEntropyLoss()
@@ -86,7 +90,7 @@ if __name__ == "__main__":
 
         print("\nTraining Done...\n\nPerform Validation...")
         # Evaluate on the validation set
-        accuracy = trainer.validate(model, criterion, epoch, use_gpu)
+        accuracy, val_loss = trainer.validate(model, criterion, epoch, use_gpu)
 
         # Checkpointing the model after every epoch
         trainer.save_checkpoint({
@@ -105,6 +109,11 @@ if __name__ == "__main__":
                     'best_accuracy': highest_accuracy,
                     'optimizer' : optimizer.state_dict()
             },'./models/best_model.pth.tar')
+
+        # Check early stopping
+        early_stopper.check_loss_history(val_loss)
+        if early_stopper.stop:
+            print("Stopping training...")
 
     
     print("Training complete...")

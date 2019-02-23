@@ -13,6 +13,7 @@ from torchvision import datasets, transforms
 from torchvision import models
 from torch.autograd import Variable
 from torchsummary import summary
+from EarlyStopping import EarlyStopper
 
 
 def generate_class_list(data, class_list):
@@ -87,6 +88,7 @@ class Trainer:
         self.class_names = training_data.classes
         self.num_classes = len(training_data.classes)
         self.tiny_class = generate_class_list(data, self.class_names)
+        self.early_stopper = EarlyStopper()
 
         self.validation_accuracy = list()
     
@@ -198,7 +200,7 @@ class Trainer:
                   format(epoch, average_validation_loss, correct_predictions, len(self.validation_loader.dataset),
                          self.validation_accuracy_cur_epoch))
 
-        return self.validation_accuracy_cur_epoch
+        return self.validation_accuracy_cur_epoch, average_validation_loss
 
 
     def save_checkpoint(self, state, filename='./models/checkpoint.pth.tar'):
