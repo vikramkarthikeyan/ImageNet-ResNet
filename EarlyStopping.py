@@ -7,10 +7,10 @@ class EarlyStopper():
 
     def check_loss_history(self, loss):
         if loss < self.val_loss:
-            val_loss = loss
+            self.val_loss = loss
         else:
             self.counter += 1
-            print("Early stopping counter {0} out of {1}", self.counter, self.patience)
+            print("Early stopping counter {0} out of {1}".format(self.counter, self.patience))
             if self.counter == self.patience:
                 self.stop = True
 
