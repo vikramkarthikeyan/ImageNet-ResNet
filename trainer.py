@@ -117,6 +117,8 @@ class Trainer:
         correct_predictions = 0
         validation_size = len(self.validation_loader.dataset)
 
+        print("\n")
+
         with torch.no_grad():
             end = time.time()
             for i, (data, target) in enumerate(self.validation_loader):
@@ -165,7 +167,7 @@ class Trainer:
             # add validation accuracy to list for visualization
             self.validation_accuracy.append(self.validation_accuracy_epoch)
 
-            print('\nValidation Epoch {}: Average loss: {:.6f} \t Accuracy: {}/{} ({:.2f}%)\n'.
+            print('\n\nValidation Epoch {}: Average loss: {:.6f} \t Accuracy: {}/{} ({:.2f}%)\n'.
                   format(epoch, average_validation_loss, correct_predictions, validation_size,
                          self.validation_accuracy_epoch))
 
