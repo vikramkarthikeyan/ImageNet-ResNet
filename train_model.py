@@ -93,6 +93,7 @@ if __name__ == "__main__":
         print("\nTraining Done...\n\nPerform Validation...")
         # Evaluate on the validation set
         accuracy, val_loss = trainer.validate(model, criterion, epoch, use_gpu)
+        print("Accuracy and validation loss:", accuracy, val_loss)
 
         # Checkpointing the model after every epoch
         trainer.save_checkpoint({
