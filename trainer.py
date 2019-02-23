@@ -63,6 +63,8 @@ class Trainer:
     def train(self, model, criterion, optimizer, epoch, usegpu):
         batch_time = AverageMeter()
         losses = AverageMeter()
+        top1 = AverageMeter()
+        top5 = AverageMeter()
 
         # switch to train mode
         model.train()
@@ -84,7 +86,10 @@ class Trainer:
             loss = criterion(output, target)
 
             # measure accuracy and record loss
+            acc1, acc5 = self.accuracy(output, target, topk=(1, 5))
             losses.update(loss.item(), data.size(0))
+            top1.update(acc1[0], data.size(0))
+            top5.update(acc5[0], data.size(0))
 
             # Clear(zero) Gradients for theta
             optimizer.zero_grad()
@@ -104,12 +109,16 @@ class Trainer:
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
                         epoch, i, len(self.train_loader), batch_time=batch_time,
                         loss=losses), end="")
+        
+        print("Training Accuracy: Acc@1:{top1.avg:.3f}, Acc@5:{top5.avg:.3f}".format(top1=top1, top5=top5))
 
 
     def validate(self, model, criterion, epoch, usegpu):
         batch_time = AverageMeter()
         losses = AverageMeter()
         accuracy = AverageMeter()
+        top1 = AverageMeter()
+        top5 = AverageMeter()
 
         # switch to evaluate mode
         model.eval()
@@ -146,6 +155,9 @@ class Trainer:
                 # Step 3: Measure accuracy and record loss
                 losses.update(loss.item(), data.size(0))
                 accuracy.update(100 * correct_predictions_epoch/float(self.validation_batch_size))
+                acc1, acc5 = self.accuracy(output, target, topk=(1, 5))
+                top1.update(acc1[0], data.size(0))
+                top5.update(acc5[0], data.size(0))
 
                 # measure elapsed time
                 batch_time.update(time.time() - end)
@@ -168,12 +180,31 @@ class Trainer:
             # add validation accuracy to list for visualization
             self.validation_accuracy.append(self.validation_accuracy_epoch)
 
-            print('\n\nValidation Epoch {}: Average loss: {:.6f} \t Accuracy: {}/{} ({:.2f}%)\n'.
-                  format(epoch, average_validation_loss, correct_predictions, validation_size,
-                         self.validation_accuracy_epoch))
+            # print('\n\nValidation Epoch {}: Average loss: {:.6f} \t Accuracy: {}/{} ({:.2f}%)\n'.
+            #       format(epoch, average_validation_loss, correct_predictions, validation_size,
+            #              self.validation_accuracy_epoch))
+            
+            print("Validation Accuracy: Acc@1:{top1.avg:.3f}, Acc@5:{top5.avg:.3f} Avg Loss:{loss:.6f}".format(top1=top1, top5=top5, loss=average_validation_loss))
 
         return self.validation_accuracy_epoch, validation_loss
 
 
     def save_checkpoint(self, state, filename='./models/checkpoint.pth.tar'):
         torch.save(state, filename)
+    
+    # Used - https://github.com/pytorch/examples/blob/master/imagenet/main.py
+    def accuracy(self, output, target, topk=(1,)):
+        """Computes the accuracy over the k top predictions for the specified values of k"""
+        with torch.no_grad():
+            maxk = max(topk)
+            batch_size = target.size(0)
+
+            _, pred = output.topk(maxk, 1, True, True)
+            pred = pred.t()
+            correct = pred.eq(target.view(1, -1).expand_as(pred))
+
+            res = []
+            for k in topk:
+                correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
+                res.append(correct_k.mul_(100.0 / batch_size))
+            return res
