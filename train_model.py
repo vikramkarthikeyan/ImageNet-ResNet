@@ -18,6 +18,7 @@ from trainer import AverageMeter
 from trainer import Trainer
 from EarlyStopping import EarlyStopper
 
+
 parser = argparse.ArgumentParser(description='Tiny ImageNet Model Training...')
 parser.add_argument('--checkpoint', default=None, type=str, help='Checkpoint model file if stopped abruptly before')
 
@@ -78,6 +79,8 @@ if __name__ == "__main__":
         optimizer.load_state_dict(checkpoint['optimizer'])
         highest_accuracy = checkpoint['best_accuracy']
         start_epochs = checkpoint['epoch']
+    
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=7, verbose=True)
 
     print("\nInitiating training...")
     for epoch in range(start_epochs, total_epochs):
@@ -109,6 +112,9 @@ if __name__ == "__main__":
                     'best_accuracy': highest_accuracy,
                     'optimizer' : optimizer.state_dict()
             },'./models/best_model.pth.tar')
+        
+        # Reducing LR on Plateau
+        scheduler.step(val_loss)
 
         # Check early stopping
         early_stopper.check_loss_history(val_loss)
