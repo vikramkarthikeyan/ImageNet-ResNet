@@ -59,6 +59,7 @@ class TrainingOrchestrator:
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=LR, momentum=SGD_MOMENTUM, weight_decay=WEIGHT_DECAY)
 
         self.highest_accuracy = 0
+        self.highest_accuracy_5 = 0
         self.start_epochs = 0
         self.total_epochs = EPOCHS
 
@@ -100,7 +101,7 @@ class TrainingOrchestrator:
             self.trainer.train(self.model, self.criterion, self.optimizer, epoch, self.use_gpu)
 
             # Evaluate on the validation set
-            accuracy, val_loss = self.trainer.validate(self.model, self.criterion, epoch, self.use_gpu)
+            accuracy, accuracy_5, val_loss = self.trainer.validate(self.model, self.criterion, epoch, self.use_gpu)
 
             # Checkpointing the model after every epoch
             self.trainer.save_checkpoint({
@@ -113,6 +114,7 @@ class TrainingOrchestrator:
             # If this epoch's model proves to be the best till now, save it as best model
             if accuracy == max(accuracy, self.highest_accuracy):
                 self.highest_accuracy = accuracy
+                self.highest_accuracy_5 = accuracy_5
                 self.trainer.save_checkpoint({
                         'epoch': epoch + 1,
                         'state_dict': self.model.state_dict(),
@@ -130,7 +132,7 @@ class TrainingOrchestrator:
                 break
         
         print("Training complete...")
-        print("Best accuracy: ", self.highest_accuracy)
+        print("Best accuracy@1: {}, accuracy@5: {}", self.highest_accuracy, self.highest_accuracy_5)
 
 
 

@@ -179,14 +179,10 @@ class Trainer:
 
             # add validation accuracy to list for visualization
             self.validation_accuracy.append(self.validation_accuracy_epoch)
-
-            # print('\n\nValidation Epoch {}: Average loss: {:.6f} \t Accuracy: {}/{} ({:.2f}%)\n'.
-            #       format(epoch, average_validation_loss, correct_predictions, validation_size,
-            #              self.validation_accuracy_epoch))
             
             print("\nValidation Accuracy: Acc@1: {top1.avg:.3f}%, Acc@5: {top5.avg:.3f}%, Avg Loss: {loss:.6f}\n".format(top1=top1, top5=top5, loss=average_validation_loss))
 
-        return self.validation_accuracy_epoch, validation_loss
+        return top1.avg, top5.avg, validation_loss
 
 
     def save_checkpoint(self, state, filename='./models/checkpoint.pth.tar'):
