@@ -74,8 +74,8 @@ if __name__ == "__main__":
         else:
             checkpoint = torch.load(model_file, map_location='cpu')
 
-        model = model.load_state_dict(checkpoint['state_dict'])
-        optimizer = optimizer.load_state_dict(checkpoint['optimizer'])
+        model.load_state_dict(checkpoint['state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer'])
         highest_accuracy = checkpoint['best_accuracy']
         start_epochs = checkpoint['epoch']
 
