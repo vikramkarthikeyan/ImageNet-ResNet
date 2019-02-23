@@ -85,7 +85,7 @@ if __name__ == "__main__":
         highest_accuracy = checkpoint['best_accuracy']
         start_epochs = checkpoint['epoch']
     
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, verbose=True)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, verbose=True)
 
     print("\nInitiating training...")
     for epoch in range(start_epochs, total_epochs):
