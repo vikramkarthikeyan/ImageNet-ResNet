@@ -14,40 +14,7 @@ from torchvision import models
 from torch.autograd import Variable
 from torchsummary import summary
 from EarlyStopping import EarlyStopper
-
-
-def generate_class_list(data, class_list):
-    filename = os.path.join(data, 'words.txt')
-
-    with open(filename, "r") as f:
-        data = f.readlines()
-    
-    class_dict = {}
-
-    for line in data:
-        entries = line.split("\t")
-        if entries[0] in class_list:
-            class_dict[entries[0]] = entries[1].split(",")[0].rstrip() 
-
-    return class_dict
-
-# Class directly used from https://github.com/pytorch/examples/blob/master/imagenet/main.py
-class AverageMeter(object):
-    """Computes and stores the average and current value"""
-    def __init__(self):
-        self.reset()
-
-    def reset(self):
-        self.val = 0
-        self.avg = 0
-        self.sum = 0
-        self.count = 0
-
-    def update(self, val, n=1):
-        self.val = val
-        self.sum += val * n
-        self.count += n
-        self.avg = self.sum / self.count
+from AverageMeter import AverageMeter
 
 
 # Followed PyTorch's ImageNet documentation as Tiny ImageNet has just fewer classes
@@ -60,19 +27,20 @@ class Trainer:
         self.train_batch_size = training_batch_size 
         self.validation_batch_size = validation_batch_size
 
-        train_root = os.path.join(data, 'train')
-        validation_root = os.path.join(data, 'val/images') 
+        training_path = os.path.join(data, 'train')
+        validation_path = os.path.join(data, 'val/images') 
 
+        # mean and std values acquired from ImageNet statistics
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
         # Perform Data Augmentation by Randomly Flipping Training Images
-        training_data = datasets.ImageFolder(train_root,
+        training_data = datasets.ImageFolder(training_path,
                                         transform=transforms.Compose([#transforms.RandomResizedCrop(224),
                                                                         transforms.RandomHorizontalFlip(),
                                                                         transforms.ToTensor(),
                                                                         normalize]))
-        # Resize Validation Images
-        validation_data = datasets.ImageFolder(validation_root,
+        # Get Validation Images
+        validation_data = datasets.ImageFolder(validation_path,
                                             transform=transforms.Compose([#transforms.Resize(256),
                                                                             #transforms.CenterCrop(224),
                                                                             transforms.ToTensor(),
@@ -87,7 +55,6 @@ class Trainer:
 
         self.class_names = training_data.classes
         self.num_classes = len(training_data.classes)
-        self.tiny_class = generate_class_list(data, self.class_names)
         self.early_stopper = EarlyStopper()
 
         self.validation_accuracy = list()
@@ -131,7 +98,7 @@ class Trainer:
             batch_time.update(time.time() - end)
             end = time.time()
 
-            print('\rEpoch [{:04d}] Batch [{:04d}/{:04d}]\t'
+            print('\rTraining - Epoch [{:04d}] Batch [{:04d}/{:04d}]\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
                         epoch, i, len(self.train_loader), batch_time=batch_time,
@@ -148,6 +115,7 @@ class Trainer:
 
         validation_loss = 0
         correct_predictions = 0
+        validation_size = len(self.validation_loader.dataset)
 
         with torch.no_grad():
             end = time.time()
@@ -168,7 +136,7 @@ class Trainer:
 
                 # Step 2: Compute total no of correct predictions 
                 for j in range(0, self.validation_batch_size):
-                    if index[j] == target.data[j]:  # if index equal to target label, record correct classification
+                    if index[j] == target.data[j]:
                         correct_predictions += 1
                         correct_predictions_epoch += 1
 
@@ -180,7 +148,7 @@ class Trainer:
                 batch_time.update(time.time() - end)
                 end = time.time()
 
-                print('\rBatch [{:04d}/{:04d}]\t'
+                print('\rValidation - Batch [{:04d}/{:04d}]\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                         'Accuracy {accuracy.val} ({accuracy.avg})\t'.format(
@@ -189,18 +157,19 @@ class Trainer:
 
             # average loss = sum of loss over all batches/num of batches
             average_validation_loss = validation_loss / (
-                len(self.validation_loader.dataset) / self.validation_batch_size)
+                validation_size / self.validation_batch_size)
 
             # calculate total accuracy for the current epoch
-            self.validation_accuracy_cur_epoch = 100.0 * correct_predictions / (len(self.validation_loader.dataset))
-            # add accuracy for current epoch to list
-            self.validation_accuracy.append(self.validation_accuracy_cur_epoch)
+            self.validation_accuracy_epoch = 100.0 * correct_predictions / (validation_size)
+
+            # add validation accuracy to list for visualization
+            self.validation_accuracy.append(self.validation_accuracy_epoch)
 
             print('\nValidation Epoch {}: Average loss: {:.6f} \t Accuracy: {}/{} ({:.2f}%)\n'.
-                  format(epoch, average_validation_loss, correct_predictions, len(self.validation_loader.dataset),
-                         self.validation_accuracy_cur_epoch))
+                  format(epoch, average_validation_loss, correct_predictions, validation_size,
+                         self.validation_accuracy_epoch))
 
-        return self.validation_accuracy_cur_epoch, average_validation_loss
+        return self.validation_accuracy_epoch, validation_loss
 
 
     def save_checkpoint(self, state, filename='./models/checkpoint.pth.tar'):

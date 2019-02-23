@@ -21,6 +21,7 @@ from EarlyStopping import EarlyStopper
 
 parser = argparse.ArgumentParser(description='Tiny ImageNet Model Training...')
 parser.add_argument('--checkpoint', default=None, type=str, help='Checkpoint model file if stopped abruptly before')
+parser.add_argument('--epochs', default=None, type=int, help="Number of training epochs")
 
 args = parser.parse_args()
 
@@ -28,6 +29,7 @@ args = parser.parse_args()
 LR = 0.1
 SGD_MOMENTUM = 0.9
 WEIGHT_DECAY = 0.00001
+EPOCHS = 25
 
 if __name__ == "__main__":
 
@@ -59,8 +61,11 @@ if __name__ == "__main__":
 
     highest_accuracy = 0
     start_epochs = 0
-    total_epochs = 10
+    total_epochs = EPOCHS
 
+    # If number of epochs is specified
+    if args.epochs:
+        total_epochs = args.epochs
 
     # If checkpoint is available, load model from checkpoint
     if args.checkpoint:
@@ -90,10 +95,8 @@ if __name__ == "__main__":
         # Train for one epoch
         trainer.train(model, criterion, optimizer, epoch, use_gpu)
 
-        print("\nTraining Done...\n\nPerform Validation...")
         # Evaluate on the validation set
         accuracy, val_loss = trainer.validate(model, criterion, epoch, use_gpu)
-        print("Accuracy and validation loss:", accuracy, val_loss)
 
         # Checkpointing the model after every epoch
         trainer.save_checkpoint({
