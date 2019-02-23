@@ -110,7 +110,7 @@ class Trainer:
                         epoch, i, len(self.train_loader), batch_time=batch_time,
                         loss=losses), end="")
         
-        print("\nTraining Accuracy: Acc@1:{top1.avg:.3f}%, Acc@5:{top5.avg:.3f}%".format(top1=top1, top5=top5))
+        print("\nTraining Accuracy: Acc@1: {top1.avg:.3f}%, Acc@5: {top5.avg:.3f}%".format(top1=top1, top5=top5))
 
 
     def validate(self, model, criterion, epoch, usegpu):
@@ -184,7 +184,7 @@ class Trainer:
             #       format(epoch, average_validation_loss, correct_predictions, validation_size,
             #              self.validation_accuracy_epoch))
             
-            print("\nValidation Accuracy: Acc@1:{top1.avg:.3f}%, Acc@5:{top5.avg:.3f}%, Avg Loss:{loss:.6f}".format(top1=top1, top5=top5, loss=average_validation_loss))
+            print("\nValidation Accuracy: Acc@1: {top1.avg:.3f}%, Acc@5: {top5.avg:.3f}%, Avg Loss: {loss:.6f}".format(top1=top1, top5=top5, loss=average_validation_loss))
 
         return self.validation_accuracy_epoch, validation_loss
 
