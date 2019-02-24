@@ -132,7 +132,7 @@ class TrainingOrchestrator:
                 break
         
         print("Training complete...")
-        print("Best accuracy@1: {}, accuracy@5: {}", self.highest_accuracy, self.highest_accuracy_5)
+        print("Best accuracy@1: {0}, accuracy@5: {1}".format(self.highest_accuracy.item(), self.highest_accuracy_5.item()))
 
 
 
