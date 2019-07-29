@@ -1,1 +1,1 @@
-# 666-project-1
+# ImageNet classification solved using ResNet-50 
